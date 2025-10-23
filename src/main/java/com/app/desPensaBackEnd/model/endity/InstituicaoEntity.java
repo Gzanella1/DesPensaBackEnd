@@ -44,7 +44,8 @@ public class InstituicaoEntity {
     private List<PessoaEntity> pessoas = new ArrayList<>();
 
 
-    @OneToMany
+    // "instituicao" é o nome do atributo na classe Usuario:
+    @OneToMany(mappedBy = "instituicao", cascade = CascadeType.ALL)
     private List<CardapioEntity> cardapioEntities = new ArrayList<>();
 
 
