@@ -13,11 +13,8 @@ public class PessoaEntity {
     @Column(name = "id_pessoa")
     private Long idPessoa;
 
-
-    // Muitas pessoas pertencem a uma instituição
     @ManyToOne
     @JoinColumn(name = "id_instituicao", nullable = false)
     private InstituicaoEntity instituicao;
-
 
 }

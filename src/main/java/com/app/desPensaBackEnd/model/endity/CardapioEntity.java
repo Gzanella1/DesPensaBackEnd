@@ -14,7 +14,9 @@ public class CardapioEntity {
     @Column(name = "id_cardapio")
     private Long idCardapio;
 
-    @ManyToOne()
-    @JoinColumn(name = "id_instituicao", nullable = false)
-    private InstituicaoEntity instituicaoEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_id_instituicao", nullable = false)
+    private InstituicaoEntity instituicao;
+
 }

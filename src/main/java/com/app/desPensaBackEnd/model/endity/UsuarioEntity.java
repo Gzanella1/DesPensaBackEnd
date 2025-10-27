@@ -1,7 +1,7 @@
 package com.app.desPensaBackEnd.model.endity;
 
 
-import com.app.desPensaBackEnd.enums.PerfilAcessoUsuario;
+import com.app.desPensaBackEnd.enums.TipoAcessoUsuario;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,10 +34,6 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "senha_usuario")
     private String senha;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_acesso_usuario")
-    private PerfilAcessoUsuario tipoAcesso;
-
     @Column(name = "data_criacao_usuario")
     private LocalDate dataCriacao;
 
@@ -48,12 +44,12 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "foto_perfil_usuario")
     private String fotoPerfil;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_acesso", nullable = false, length = 20)
+    private TipoAcessoUsuario tipoAcesso;
 
-    // Muitos usuários pertencem a uma instituição
-    // @JoinColumn: define a coluna estrangeira no banco (instituicao_id) que referencia o id da tabela tb_instituicao.
-    // referencedColumnName = "id" diz qual coluna na tabela instituicao é a chave primária.
     @ManyToOne
-    @JoinColumn(name = "instituicao_id", referencedColumnName = "idInstituicao")
+    @JoinColumn(name = "fk_id_instituicao", nullable = false)
     private InstituicaoEntity instituicao;
 
 
@@ -76,11 +72,12 @@ public class UsuarioEntity implements UserDetails {
     @Override
     public boolean isEnabled() { return Boolean.TRUE.equals(ativo); }
 
-
-    /*   @Override
+/*
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of(new SimpleGrantedAuthority("USER"));
     }*/
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
