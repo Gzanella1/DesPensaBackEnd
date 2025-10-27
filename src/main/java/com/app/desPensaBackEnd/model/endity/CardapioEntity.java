@@ -4,6 +4,8 @@ package com.app.desPensaBackEnd.model.endity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Table(name = "tb_cardapio")
@@ -13,6 +15,10 @@ public class CardapioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cardapio")
     private Long idCardapio;
+
+    private LocalDate dataGeracaoCardapio;
+    private TipoRefeicao tipoRefeicao;
+
 
 
     @ManyToOne

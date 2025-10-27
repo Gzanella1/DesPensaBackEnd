@@ -35,8 +35,6 @@ public class InstituicaoEntity {
     @Column(name = "tipo_unidade", nullable = false, length = 20)
     private TipoUnidade tipoUnidade;
 
-
-
     // Uma instituição pode ter vários usuários
         /* @OneToMany(mappedBy = "instituicao"): indica que essa relação é mapeada pelo atributo instituicao
         da classe UsuarioEntity. Ou seja, o lado “forte” da relação está em UsuarioEntity.
@@ -46,8 +44,6 @@ public class InstituicaoEntity {
     @OneToMany(mappedBy = "instituicao", cascade = CascadeType.ALL)
     private List<UsuarioEntity> responsaveis = new ArrayList<>();
 
-
-    @Column(name = "pessoas_daInstituicao")
     // Uma instituição tem muitas pessoas
     @OneToMany(mappedBy = "instituicao", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PessoaEntity> pessoas = new ArrayList<>();
@@ -59,7 +55,5 @@ public class InstituicaoEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fkid_endereco") // nome da FK na tabela tb_instituicao
     private EnderecoEntity endereco;
-
-
 
 }

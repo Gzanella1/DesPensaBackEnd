@@ -13,8 +13,6 @@ public class EnderecoEntity {
     @Column(name = "id_endereco")
     private Long idEndereco;
 
-
-
     @Column(name = "numero", nullable = false)
     private String numero;
 
@@ -32,7 +30,6 @@ public class EnderecoEntity {
 
     @Column(name = "cep", nullable = false, length = 10)
     private String cep;
-
 
     @OneToOne(mappedBy = "endereco")
     private InstituicaoEntity instituicao;
