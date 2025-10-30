@@ -1,6 +1,7 @@
 package com.app.desPensaBackEnd.model.endity;
 
 
+import com.app.desPensaBackEnd.enums.TipoRefeicao;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -18,8 +19,6 @@ public class CardapioEntity {
 
     private LocalDate dataGeracaoCardapio;
     private TipoRefeicao tipoRefeicao;
-
-
 
     @ManyToOne
     @JoinColumn(name = "fk_id_instituicao", nullable = false)
