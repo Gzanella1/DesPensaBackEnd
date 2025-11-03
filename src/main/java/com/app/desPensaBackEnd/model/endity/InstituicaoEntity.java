@@ -1,8 +1,7 @@
 package com.app.desPensaBackEnd.model.endity;
 
 
-import com.app.desPensaBackEnd.enums.TipoAcessoUsuario;
-import com.app.desPensaBackEnd.enums.TipoUnidade;
+import com.app.desPensaBackEnd.enums.TipoInstituicao;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -33,7 +32,7 @@ public abstract class InstituicaoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_unidade", nullable = false, length = 20)
-    private TipoUnidade tipoUnidade;
+    private TipoInstituicao tipoUnidade;
 
     // Uma instituição pode ter vários usuários
         /* @OneToMany(mappedBy = "instituicao"): indica que essa relação é mapeada pelo atributo instituicao
