@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "tb_instituicao")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class InstituicaoEntity {
 
     @Id
@@ -54,5 +55,4 @@ public abstract class InstituicaoEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fkid_endereco") // nome da FK na tabela tb_instituicao
     private EnderecoEntity endereco;
-
 }

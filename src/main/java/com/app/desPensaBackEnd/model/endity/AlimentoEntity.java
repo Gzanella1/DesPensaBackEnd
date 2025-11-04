@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "alimento")
+@Table(name = "tb_alimento")
 public class AlimentoEntity     {
 
     @Id
@@ -35,6 +35,7 @@ public class AlimentoEntity     {
     @Column(name = "quantidade_alimento")
     private int quantidade;
 
-
-
+    @ManyToOne
+    @JoinColumn(name = "fk_alimento")
+    private EstoqueEntity estoque;
 }

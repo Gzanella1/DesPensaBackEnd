@@ -22,6 +22,7 @@ public class ItemCardapio {
 
     @Column(name = "quantididade_utilizada")
     private Double quantidadeUtilizada;
+
     @Column(name = "observacao")
     private String observacao;
 }
