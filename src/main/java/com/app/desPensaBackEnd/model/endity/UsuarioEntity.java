@@ -22,6 +22,9 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "id_usuario")
     private Long idUsuario;
 
+    @Column(name = "cpf")
+    private String cpf;
+
     @Column(name = "codigo_usuario")
     private Long codigo;
 

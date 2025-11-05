@@ -1,0 +1,9 @@
+package com.app.desPensaBackEnd.model.dto;
+
+import lombok.Data;
+
+@Data
+public class LoginSemDTO {
+    private String username;
+    private String password;
+}
