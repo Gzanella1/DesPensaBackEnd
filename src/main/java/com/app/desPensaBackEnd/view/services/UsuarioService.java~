@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Set;
 import java.util.stream.Collector;
@@ -32,7 +31,6 @@ public class UsuarioService implements UserDetailsService {
      * .map(uE -> { ... }) → para cada usuário encontrado (uEntity), o código cria um novo UsuarioDTO e faz alguma transformação.
      * .map(uE -> { ... }), você está pegando um tipo de objeto (UsuarioEntity, que vem do banco de dados) e transformando em outro tipo (UsuarioDTO, que é o que você devolve na resposta da API).
      */
-    @GetMapping(value = "/busca")
     public Set<UsuarioDTO> buscarUsuario(){
         return usuarioRepository.findAll().stream().map(uE -> {
             UsuarioDTO userDTO = new UsuarioDTO();

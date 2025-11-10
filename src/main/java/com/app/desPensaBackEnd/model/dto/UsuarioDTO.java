@@ -18,4 +18,5 @@ public class UsuarioDTO {
     private InstituicaoEntity instituicao;
     private String fotoPerfil;
     private String cpf;
+    private String login;
 }

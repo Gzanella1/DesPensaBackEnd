@@ -16,14 +16,9 @@ public class UsuarioRestController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public Set<UsuarioDTO> retornarContribuicoes() {
+    public Set<UsuarioDTO> retornarUsuarios() {
         return usuarioService.buscarUsuario();
     }
-
-
-
-
-
 
 
 
