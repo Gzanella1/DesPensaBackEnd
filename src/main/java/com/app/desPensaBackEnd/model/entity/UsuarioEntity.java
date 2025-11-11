@@ -1,12 +1,14 @@
-package com.app.desPensaBackEnd.model.endity;
+package com.app.desPensaBackEnd.model.entity;
 
 
 import com.app.desPensaBackEnd.enums.TipoAcessoUsuario;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -21,19 +23,23 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "id_usuario")
     private Long idUsuario;
 
+    @NotNull
     @Column(name = "cpf")
     private String cpf;
 
-    @Column(name = "codigo_usuario")
+    @NotNull
+    @Column(name = "codigo_usuario", nullable = false, unique = true)
     private Long codigo;
 
+    @NotNull
     @Column(name = "nome_usuario")
     private String nome;
 
     @Column(name = "email_usuario")
     private String email;
 
-    @Column(name = "senha_usuario")
+    @NotNull
+    @Column(name = "senha_usuario", nullable = false)
     private String senha;
 
     @Column(name = "data_criacao_usuario")
@@ -46,6 +52,7 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "foto_perfil_usuario")
     private String fotoPerfil;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_acesso", nullable = false, length = 20)
     private TipoAcessoUsuario tipoAcesso;

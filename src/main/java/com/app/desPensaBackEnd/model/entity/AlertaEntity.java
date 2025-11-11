@@ -1,4 +1,4 @@
-package com.app.desPensaBackEnd.model.endity;
+package com.app.desPensaBackEnd.model.entity;
 
 import com.app.desPensaBackEnd.enums.NivelAlerta;
 import com.app.desPensaBackEnd.enums.TipoAlerta;

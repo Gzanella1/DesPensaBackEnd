@@ -1,4 +1,4 @@
-package com.app.desPensaBackEnd.model.endity;
+package com.app.desPensaBackEnd.model.entity;
 
 
 import com.app.desPensaBackEnd.enums.TipoInstituicao;
@@ -9,10 +9,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@Entity
-@Table(name = "tb_instituicao")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@MappedSuperclass
 public abstract class InstituicaoEntity {
 
     @Id
@@ -33,7 +30,7 @@ public abstract class InstituicaoEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_unidade", nullable = false, length = 20)
-    private TipoInstituicao tipoUnidade;
+    private TipoInstituicao tipoInstituição;
 
     // Uma instituição pode ter vários usuários
         /* @OneToMany(mappedBy = "instituicao"): indica que essa relação é mapeada pelo atributo instituicao

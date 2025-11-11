@@ -15,7 +15,7 @@ public class UsuarioRestController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
+    @GetMapping(value = "buscarAll")
     public Set<UsuarioDTO> retornarUsuarios() {
         return usuarioService.buscarUsuario();
     }

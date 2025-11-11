@@ -1,12 +1,13 @@
-package com.app.desPensaBackEnd.model.endity.tipoInstituicao;
+package com.app.desPensaBackEnd.model.entity.tipoInstituicao;
 
 
-import com.app.desPensaBackEnd.model.endity.InstituicaoEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.app.desPensaBackEnd.model.entity.InstituicaoEntity;
+import jakarta.persistence.*;
 
 @Entity
+
+@Table(name = "tb_escola")
+@PrimaryKeyJoinColumn(name = "id_instituicao")
 public class EscolaEntity extends InstituicaoEntity {
 
     @Column(name = "num_matricula")

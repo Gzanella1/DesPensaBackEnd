@@ -1,7 +1,7 @@
 package com.app.desPensaBackEnd.model.dto;
 
 import com.app.desPensaBackEnd.enums.TipoAcessoUsuario;
-import com.app.desPensaBackEnd.model.endity.InstituicaoEntity;
+import com.app.desPensaBackEnd.model.entity.InstituicaoEntity;
 import lombok.Data;
 
 import java.time.LocalDate;

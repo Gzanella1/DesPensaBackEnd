@@ -3,8 +3,7 @@ package com.app.desPensaBackEnd.view.services;
 import com.app.desPensaBackEnd.model.dto.LoginDTO;
 import com.app.desPensaBackEnd.model.dto.LoginSemIdDTO;
 import com.app.desPensaBackEnd.model.dto.UsuarioDTO;
-import com.app.desPensaBackEnd.model.endity.PessoaEntity;
-import com.app.desPensaBackEnd.model.endity.UsuarioEntity;
+import com.app.desPensaBackEnd.model.entity.UsuarioEntity;
 import com.app.desPensaBackEnd.view.repository.UsuarioRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service

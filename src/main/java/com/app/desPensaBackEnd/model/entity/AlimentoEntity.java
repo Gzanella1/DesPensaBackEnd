@@ -1,4 +1,4 @@
-package com.app.desPensaBackEnd.model.endity;
+package com.app.desPensaBackEnd.model.entity;
 
 import com.app.desPensaBackEnd.enums.CategoriaAlimento;
 import jakarta.persistence.*;
@@ -19,6 +19,9 @@ public class AlimentoEntity     {
     @Column(name = "nome_alimento")
     private String nome;
 
+    @Column(name = "codigo_usuario")
+    private Long codigo;
+
     @Column(name = "categoria_alimento")
     @Enumerated(EnumType.STRING)
     private CategoriaAlimento categoria;
@@ -36,6 +39,6 @@ public class AlimentoEntity     {
     private int quantidade;
 
     @ManyToOne
-    @JoinColumn(name = "fk_alimento")
+    @JoinColumn(name = "fk_estoque")
     private EstoqueEntity estoque;
 }
