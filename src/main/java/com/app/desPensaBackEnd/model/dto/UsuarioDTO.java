@@ -15,7 +15,7 @@ public class UsuarioDTO {
     private Boolean ativo;
     private LocalDate dataCriacao;
     private TipoAcessoUsuario tipoAcesso;
-    private InstituicaoEntity instituicao;
+    private Long idInstituicao;
     private String fotoPerfil;
     private String cpf;
     private String login;
@@ -77,12 +77,12 @@ public class UsuarioDTO {
         this.tipoAcesso = tipoAcesso;
     }
 
-    public InstituicaoEntity getInstituicao() {
-        return instituicao;
+    public Long getInstituicao() {
+        return idInstituicao;
     }
 
-    public void setInstituicao(InstituicaoEntity instituicao) {
-        this.instituicao = instituicao;
+    public void setInstituicao(Long instituicao) {
+        this.idInstituicao = instituicao;
     }
 
     public String getFotoPerfil() {

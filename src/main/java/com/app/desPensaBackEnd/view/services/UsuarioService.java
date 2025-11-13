@@ -3,7 +3,9 @@ package com.app.desPensaBackEnd.view.services;
 import com.app.desPensaBackEnd.model.dto.LoginDTO;
 import com.app.desPensaBackEnd.model.dto.LoginSemIdDTO;
 import com.app.desPensaBackEnd.model.dto.UsuarioDTO;
+import com.app.desPensaBackEnd.model.entity.InstituicaoEntity;
 import com.app.desPensaBackEnd.model.entity.UsuarioEntity;
+import com.app.desPensaBackEnd.view.repository.InstituicaoRepository;
 import com.app.desPensaBackEnd.view.repository.UsuarioRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class UsuarioService implements UserDetailsService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private InstituicaoRepository instituicaoRepository;
 
     /**
      * Retorna os usuarios
@@ -30,19 +34,40 @@ public class UsuarioService implements UserDetailsService {
      * .map(uE -> { ... }) → para cada usuário encontrado (uEntity), o código cria um novo UsuarioDTO e faz alguma transformação.
      * .map(uE -> { ... }), você está pegando um tipo de objeto (UsuarioEntity, que vem do banco de dados) e transformando em outro tipo (UsuarioDTO, que é o que você devolve na resposta da API).
      */
-    @GetMapping(value = "/busca")
-    public Set<UsuarioDTO> buscarUsuario(){
+
+
+
+    @GetMapping("/busca")
+    public Set<UsuarioDTO> buscarUsuarios() {
         return usuarioRepository.findAll().stream().map(uE -> {
-            UsuarioDTO userDTO = new UsuarioDTO();
-            BeanUtils.copyProperties(uE, userDTO);
-            return userDTO;
+            UsuarioDTO dto = new UsuarioDTO();
+            BeanUtils.copyProperties(uE, dto);
+
+            // Define o ID da instituição manualmente
+            if (uE.getInstituicao() != null) {
+                dto.setInstituicao(uE.getInstituicao().getIdInstituicao());
+            }
+
+            return dto;
         }).collect(Collectors.toSet());
     }
+
+
+
+
+
+
 
 
     public void cadastrar(UsuarioDTO userDTO){
         UsuarioEntity ue=new UsuarioEntity();
         BeanUtils.copyProperties(userDTO, ue);
+
+        InstituicaoEntity instituicao = instituicaoRepository
+                .findById(userDTO.getInstituicao())
+                .orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
+
+        ue.setInstituicao(instituicao);
         usuarioRepository.save(ue);
     }
 

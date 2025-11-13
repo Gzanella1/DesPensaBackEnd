@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_hotel")
-@PrimaryKeyJoinColumn(name = "id_instituicao")
+//@PrimaryKeyJoinColumn(name = "id_instituicao")
 public class HotelEntity extends InstituicaoEntity {
 
     @Column(name = "num_quartos")

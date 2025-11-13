@@ -9,11 +9,13 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@MappedSuperclass
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class InstituicaoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id_instituicao")
     private Long idInstituicao;
 
@@ -52,4 +54,77 @@ public abstract class InstituicaoEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fkid_endereco") // nome da FK na tabela tb_instituicao
     private EnderecoEntity endereco;
+
+
+    public Long getIdInstituicao() {
+        return idInstituicao;
+    }
+
+    public void setIdInstituicao(Long idInstituicao) {
+        this.idInstituicao = idInstituicao;
+    }
+
+    public Long getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public TipoInstituicao getTipoInstituição() {
+        return tipoInstituição;
+    }
+
+    public void setTipoInstituição(TipoInstituicao tipoInstituição) {
+        this.tipoInstituição = tipoInstituição;
+    }
+
+    public List<UsuarioEntity> getResponsaveis() {
+        return responsaveis;
+    }
+
+    public void setResponsaveis(List<UsuarioEntity> responsaveis) {
+        this.responsaveis = responsaveis;
+    }
+
+    public List<PessoaEntity> getPessoas() {
+        return pessoas;
+    }
+
+    public void setPessoas(List<PessoaEntity> pessoas) {
+        this.pessoas = pessoas;
+    }
+
+    public List<CardapioEntity> getCardapios() {
+        return cardapios;
+    }
+
+    public void setCardapios(List<CardapioEntity> cardapios) {
+        this.cardapios = cardapios;
+    }
+
+    public EnderecoEntity getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(EnderecoEntity endereco) {
+        this.endereco = endereco;
+    }
 }
