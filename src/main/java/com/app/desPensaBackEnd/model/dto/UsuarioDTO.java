@@ -21,6 +21,16 @@ public class UsuarioDTO {
     private String login;
 
 
+    public Long getIdInstituicao() {
+        return idInstituicao;
+    }
+
+    public void setIdInstituicao(Long idInstituicao) {
+        this.idInstituicao = idInstituicao;
+    }
+
+
+
     public Long getCodigo() {
         return codigo;
     }
@@ -77,13 +87,6 @@ public class UsuarioDTO {
         this.tipoAcesso = tipoAcesso;
     }
 
-    public Long getInstituicao() {
-        return idInstituicao;
-    }
-
-    public void setInstituicao(Long instituicao) {
-        this.idInstituicao = instituicao;
-    }
 
     public String getFotoPerfil() {
         return fotoPerfil;
