@@ -1,5 +1,7 @@
 package com.app.desPensaBackEnd.controller;
 
+import com.app.desPensaBackEnd.model.dto.LoginDTO;
+import com.app.desPensaBackEnd.model.dto.LoginSemIdDTO;
 import com.app.desPensaBackEnd.model.dto.UsuarioDTO;
 import com.app.desPensaBackEnd.view.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,16 @@ public class UsuarioRestController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping(value = "/buscarAll")
+    @GetMapping(value = "/buscarAll",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Set<UsuarioDTO> retornarUsuarios() {
         return usuarioService.buscarUsuarios();
     }
 
+    @PostMapping("/login")
+    public LoginDTO login(@RequestBody LoginSemIdDTO login){
 
+        return usuarioService.login(login);
+    }
 
     /**
      * Chama um método que cadastra uma nova pessoa no banco de dados
