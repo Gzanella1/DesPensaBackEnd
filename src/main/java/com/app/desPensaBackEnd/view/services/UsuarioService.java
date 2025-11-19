@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,10 +35,6 @@ public class UsuarioService implements UserDetailsService {
      * .map(uE -> { ... }) → para cada usuário encontrado (uEntity), o código cria um novo UsuarioDTO e faz alguma transformação.
      * .map(uE -> { ... }), você está pegando um tipo de objeto (UsuarioEntity, que vem do banco de dados) e transformando em outro tipo (UsuarioDTO, que é o que você devolve na resposta da API).
      */
-
-
-
-    @GetMapping("/busca")
     public Set<UsuarioDTO> buscarUsuarios() {
         return usuarioRepository.findAll().stream().map(uE -> {
             UsuarioDTO dto = new UsuarioDTO();
@@ -45,7 +42,7 @@ public class UsuarioService implements UserDetailsService {
 
             // Define o ID da instituição manualmente
             if (uE.getInstituicao() != null) {
-                dto.setInstituicao(uE.getInstituicao().getIdInstituicao());
+                dto.setIdInstituicao(uE.getInstituicao().getIdInstituicao());
             }
 
             return dto;
@@ -53,19 +50,17 @@ public class UsuarioService implements UserDetailsService {
     }
 
 
-
-
-
-
-
-
     public void cadastrar(UsuarioDTO userDTO){
-        UsuarioEntity ue=new UsuarioEntity();
+        if (userDTO.getIdInstituicao() == null) {
+            throw new IllegalArgumentException("O ID da instituição é obrigatório.");
+        }
+
+        UsuarioEntity ue = new UsuarioEntity();
         BeanUtils.copyProperties(userDTO, ue);
 
         InstituicaoEntity instituicao = instituicaoRepository
-                .findById(userDTO.getInstituicao())
-                .orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
+                .findById(userDTO.getIdInstituicao())
+                .orElseThrow(() -> new RuntimeException("Instituição não encontrada: " + userDTO.getIdInstituicao()));
 
         ue.setInstituicao(instituicao);
         usuarioRepository.save(ue);
