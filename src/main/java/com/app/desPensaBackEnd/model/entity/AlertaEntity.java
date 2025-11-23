@@ -35,4 +35,59 @@ public class AlertaEntity {
     private NivelAlerta nivel;
 
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public TipoAlerta getTipoAlerta() {
+        return tipoAlerta;
+    }
+
+    public void setTipoAlerta(TipoAlerta tipoAlerta) {
+        this.tipoAlerta = tipoAlerta;
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
+    public EstoqueEntity getEstoque() {
+        return estoque;
+    }
+
+    public void setEstoque(EstoqueEntity estoque) {
+        this.estoque = estoque;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    public void setData(LocalDateTime data) {
+        this.data = data;
+    }
+
+    public Boolean getVisualizado() {
+        return visualizado;
+    }
+
+    public void setVisualizado(Boolean visualizado) {
+        this.visualizado = visualizado;
+    }
+
+    public NivelAlerta getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(NivelAlerta nivel) {
+        this.nivel = nivel;
+    }
 }

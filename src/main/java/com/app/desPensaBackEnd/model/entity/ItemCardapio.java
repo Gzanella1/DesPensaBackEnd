@@ -1,28 +1,67 @@
 package com.app.desPensaBackEnd.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
-@Table(name = "tb_ItemCardapio")
+@Table(name = "tb_item_cardapio")
 public class ItemCardapio {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_item_cardapio")
-    private Long idItemCardapio;
+    private Long idItem;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "alimento_id", nullable = false)
+    // Vínculo com o Alimento do seu estoque
+    @ManyToOne
+    @JoinColumn(name = "fk_alimento")
     private AlimentoEntity alimento;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cardapio_id", nullable = false)
+    private double quantidadeUsada;
+    private String unidade;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_cardapio")
+    @JsonIgnore
     private CardapioEntity cardapio;
 
-    @Column(name = "quantididade_utilizada")
-    private Double quantidadeUtilizada;
 
-    @Column(name = "observacao")
-    private String observacao;
+    public Long getIdItem() {
+        return idItem;
+    }
+
+    public void setIdItem(Long idItem) {
+        this.idItem = idItem;
+    }
+
+    public AlimentoEntity getAlimento() {
+        return alimento;
+    }
+
+    public void setAlimento(AlimentoEntity alimento) {
+        this.alimento = alimento;
+    }
+
+    public double getQuantidadeUsada() {
+        return quantidadeUsada;
+    }
+
+    public void setQuantidadeUsada(double quantidadeUsada) {
+        this.quantidadeUsada = quantidadeUsada;
+    }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
+    }
+
+    public CardapioEntity getCardapio() {
+        return cardapio;
+    }
+
+    public void setCardapio(CardapioEntity cardapio) {
+        this.cardapio = cardapio;
+    }
 }

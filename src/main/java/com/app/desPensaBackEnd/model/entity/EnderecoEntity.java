@@ -34,4 +34,7 @@ public class EnderecoEntity {
     @OneToOne(mappedBy = "endereco")
     private InstituicaoEntity instituicao;
 
+
+
+
 }

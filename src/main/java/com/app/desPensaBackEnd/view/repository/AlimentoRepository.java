@@ -5,8 +5,10 @@ import com.app.desPensaBackEnd.model.entity.UsuarioEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface AlimentoRepository extends JpaRepository<AlimentoEntity,Long> {
-    AlimentoEntity findByCodigo(Long codigo);
+import java.util.List;
 
+@Repository
+public interface AlimentoRepository extends JpaRepository<AlimentoEntity, Long> {
+    // Método customizado usado no Service
+    List<AlimentoEntity> findByEstoqueIdEstoqueAndQuantidadeGreaterThan(Long idEstoque, int quantidadeMinima);
 }

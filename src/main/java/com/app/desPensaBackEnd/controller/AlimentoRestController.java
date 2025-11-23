@@ -1,51 +1,52 @@
 package com.app.desPensaBackEnd.controller;
 
-import com.app.desPensaBackEnd.model.dto.UsuarioDTO;
-import com.app.desPensaBackEnd.view.services.UsuarioService;
+import com.app.desPensaBackEnd.model.dto.AlimentoDTO;
+import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
+import com.app.desPensaBackEnd.view.services.AlimentoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.List;
 
+@RestController
+@RequestMapping("/alimentos") // endpoint base
 public class AlimentoRestController {
-	}
-
+/*
 	@Autowired
 	private AlimentoService alimentoService;
 
-// GET - Listar Todos
+	// GET - Listar Todos
+	@GetMapping
+	public List<AlimentoDTO> listarTodos() {
+		return alimentoService.listarTodos();
+	}
 
-@GetMapping
-public List<Alimento> listartodos( ) {
-	return alimentoService.listarTodos ( );{
-}
-	
-// GET - Buscar por ID
+	// GET - Buscar por ID
+	@GetMapping("/{id}")
+	public AlimentoDTO buscarPorId(@PathVariable Long id) {
+		return alimentoService.buscarPorId(id);
+	}
 
-@GetMapping("/{id}")
-public Alimento buscarPorId(@PathVariable Long id) {
-	return alimentoService.buscarPorId(id);
-}
+	// POST - Criar novo alimento
+	@PostMapping
+	public AlimentoDTO criar(@RequestBody AlimentoDTO alimento) {
+		return alimentoService.salvar(alimento);
+	}
 
-// POST - criar novo alimento
-@PostMapping
-public Alimento criar(@RequestBody Alimento alimento) {
-    return alimentoService.salvar(alimento);
-}
+	// PUT - Atualizar alimento
+	@PutMapping("/{id}")
+	public AlimentoDTO atualizar(
+			@PathVariable Long id,
+			@RequestBody AlimentoDTO alimentoAtualizado
+	) {
+		return alimentoService.atualizar(id, alimentoAtualizado);
+	}
 
-// PUT - atualizar alimento
-@PutMapping("/{id}")
-public Alimento atualizar(
-        @PathVariable Long id,
-        @RequestBody Alimento alimentoAtualizado
-) {
-    return alimentoService.atualizar(id, alimentoAtualizado);
-}
+	// DELETE - Remover alimento
+	@DeleteMapping("/{id}")
+	public void deletar(@PathVariable Long id) {
+		alimentoService.deletar(id);
+	}
+	*/
 
-// DELETE - remover alimento
-@DeleteMapping("/{id}")
-public void deletar(@PathVariable Long id) {
-    alimentoService.deletar(id);
-}
 }

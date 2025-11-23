@@ -2,10 +2,9 @@ package com.app.desPensaBackEnd.model.entity;
 
 
 import com.app.desPensaBackEnd.enums.TipoInstituicao;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +48,8 @@ public abstract class InstituicaoEntity {
 
     // indica que o atributo instituição na classe cardapio é quem manda
     @OneToMany(mappedBy = "instituicao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // "Eu gerencio a lista"
+    //@JsonIgnore
     private List<CardapioEntity> cardapios = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)

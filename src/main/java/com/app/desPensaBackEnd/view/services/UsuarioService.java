@@ -9,19 +9,17 @@ import com.app.desPensaBackEnd.view.repository.InstituicaoRepository;
 import com.app.desPensaBackEnd.view.repository.UsuarioRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService /*implements UserDetailsService*/ {
 
+
+    /*
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -34,7 +32,7 @@ public class UsuarioService implements UserDetailsService {
      * Um stream/fluxo é uma forma moderna de percorrer coleções no Java — tipo uma versão poderosa de for.
      * .map(uE -> { ... }) → para cada usuário encontrado (uEntity), o código cria um novo UsuarioDTO e faz alguma transformação.
      * .map(uE -> { ... }), você está pegando um tipo de objeto (UsuarioEntity, que vem do banco de dados) e transformando em outro tipo (UsuarioDTO, que é o que você devolve na resposta da API).
-     */
+     *
     public Set<UsuarioDTO> buscarUsuarios() {
         return usuarioRepository.findAll().stream().map(uE -> {
             UsuarioDTO dto = new UsuarioDTO();
@@ -85,9 +83,9 @@ public class UsuarioService implements UserDetailsService {
      * @param username
      * @return UserDetails
      * @throws UsernameNotFoundException
-     */
+     *
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
-    }
+    }*/
 }
