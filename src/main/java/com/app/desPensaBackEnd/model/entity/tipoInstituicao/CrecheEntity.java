@@ -17,4 +17,19 @@ public class CrecheEntity extends InstituicaoEntity {
     @Column(name = "capacidade")
     private int capacidade;
 
+    public int getIdadeMaximaAtendidaMeses() {
+        return idadeMaximaAtendidaMeses;
+    }
+
+    public void setIdadeMaximaAtendidaMeses(int idadeMaximaAtendidaMeses) {
+        this.idadeMaximaAtendidaMeses = idadeMaximaAtendidaMeses;
+    }
+
+    public int getCapacidade() {
+        return capacidade;
+    }
+
+    public void setCapacidade(int capacidade) {
+        this.capacidade = capacidade;
+    }
 }

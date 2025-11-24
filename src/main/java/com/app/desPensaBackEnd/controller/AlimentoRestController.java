@@ -1,52 +1,71 @@
 package com.app.desPensaBackEnd.controller;
 
-import com.app.desPensaBackEnd.model.dto.AlimentoDTO;
-import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
 import com.app.desPensaBackEnd.view.services.AlimentoService;
+import com.app.desPensaBackEnd.view.services.EstoqueService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import com.app.desPensaBackEnd.model.dto.AlimentoInputDTO;
+import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
-@RequestMapping("/alimentos") // endpoint base
+@RequestMapping("/api/alimentos")
 public class AlimentoRestController {
-/*
+
 	@Autowired
-	private AlimentoService alimentoService;
+	private final AlimentoService alimentoService;
 
-	// GET - Listar Todos
-	@GetMapping
-	public List<AlimentoDTO> listarTodos() {
-		return alimentoService.listarTodos();
+	@Autowired
+	private EstoqueService estoqueService;
+
+	public AlimentoRestController(AlimentoService alimentoService) {
+		this.alimentoService = alimentoService;
 	}
 
-	// GET - Buscar por ID
-	@GetMapping("/{id}")
-	public AlimentoDTO buscarPorId(@PathVariable Long id) {
-		return alimentoService.buscarPorId(id);
+
+	@PatchMapping("/{id}/consumir")
+	public ResponseEntity<?> consumir(@PathVariable Long id, @RequestParam int quantidade) {
+		try {
+			AlimentoEntity atualizado = estoqueService.consumirAlimento(id, quantidade);
+			return ResponseEntity.ok(atualizado);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (EntityNotFoundException e) {
+			return ResponseEntity.notFound().build();
+		}
 	}
 
-	// POST - Criar novo alimento
+	// POST: Adicionar Alimento
+	// URL: http://localhost:8080/api/alimentos
 	@PostMapping
-	public AlimentoDTO criar(@RequestBody AlimentoDTO alimento) {
-		return alimentoService.salvar(alimento);
+	public ResponseEntity<AlimentoEntity> criar(@RequestBody AlimentoInputDTO dto) {
+		AlimentoEntity novoAlimento = alimentoService.adicionar(dto);
+		return ResponseEntity.ok(novoAlimento);
 	}
 
-	// PUT - Atualizar alimento
-	@PutMapping("/{id}")
-	public AlimentoDTO atualizar(
-			@PathVariable Long id,
-			@RequestBody AlimentoDTO alimentoAtualizado
-	) {
-		return alimentoService.atualizar(id, alimentoAtualizado);
+	// GET: Listar todos
+	@GetMapping
+	public ResponseEntity<List<AlimentoEntity>> listar() {
+		return ResponseEntity.ok(alimentoService.listarTodos());
 	}
 
-	// DELETE - Remover alimento
+	// GET: Listar por Estoque específico
+	// URL: http://localhost:8080/api/alimentos/estoque/1
+	@GetMapping("/estoque/{idEstoque}")
+	public ResponseEntity<List<AlimentoEntity>> listarPorEstoque(@PathVariable Long idEstoque) {
+		return ResponseEntity.ok(alimentoService.listarPorEstoque(idEstoque));
+	}
+
+	// DELETE: Remover
+	// URL: http://localhost:8080/api/alimentos/5 (onde 5 é o id do alimento)
 	@DeleteMapping("/{id}")
-	public void deletar(@PathVariable Long id) {
-		alimentoService.deletar(id);
+	public ResponseEntity<Void> deletar(@PathVariable Long id) {
+		alimentoService.remover(id);
+		return ResponseEntity.noContent().build();
 	}
-	*/
 
+
+	// criar  put para atualizar alimento e função no front end para chamar
 }

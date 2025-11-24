@@ -1,6 +1,7 @@
 package com.app.desPensaBackEnd.model.entity;
 
 
+
 import com.app.desPensaBackEnd.enums.TipoRefeicao;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;

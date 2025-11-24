@@ -186,11 +186,24 @@ public class CardapioGeneratorService {
 
                 // Chama o EstoqueService para baixar e gerar alerta
                 int qtdParaBaixar = (int) Math.ceil(ingApi.getAmount());
-                estoqueService.consumirAlimento(alimentoBanco, qtdParaBaixar);
+                estoqueService.consumirAlimento(alimentoBanco.getIdAlimento(), qtdParaBaixar);
             }
         }
 
         cardapio.setIngredientesUsados(ingredientesUsados);
         return cardapioRepository.save(cardapio);
+    }
+
+
+    // Método para apenas CONSULTAR os detalhes (para o Modal)
+    public DetalheReceitaDTO buscarDetalhesReceita(Long idReceita) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://api.spoonacular.com/recipes/" + idReceita + "/information?includeNutrition=false&apiKey=" + apiKey;
+
+        try {
+            return restTemplate.getForObject(url, DetalheReceitaDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar detalhes: " + e.getMessage());
+        }
     }
 }

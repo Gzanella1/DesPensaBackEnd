@@ -7,6 +7,7 @@ import com.app.desPensaBackEnd.view.services.CardapioGeneratorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 
 @RestController
@@ -60,6 +61,15 @@ public class CardapioController {
         } catch (Exception e) {
             e.printStackTrace(); // Mostra o erro no console para você ver o detalhe
             return ResponseEntity.internalServerError().body("Erro ao salvar cardápio e baixar estoque: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/detalhes/{id}")
+    public ResponseEntity<?> verDetalhesReceita(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(cardapioService.buscarDetalhesReceita(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

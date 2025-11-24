@@ -26,4 +26,48 @@ public class EstoqueEntity {
 
     @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MovimentacaoEstoqueEntity> movimentacoes;
+
+    @OneToMany(mappedBy = "estoque", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlertaEntity> alertas = new ArrayList<>();
+
+
+    public Long getIdEstoque() {
+        return idEstoque;
+    }
+
+    public void setIdEstoque(Long idEstoque) {
+        this.idEstoque = idEstoque;
+    }
+
+    public List<AlimentoEntity> getAlimentos() {
+        return alimentos;
+    }
+
+    public void setAlimentos(List<AlimentoEntity> alimentos) {
+        this.alimentos = alimentos;
+    }
+
+    public InstituicaoEntity getInstituicao() {
+        return instituicao;
+    }
+
+    public void setInstituicao(InstituicaoEntity instituicao) {
+        this.instituicao = instituicao;
+    }
+
+    public String getSessaoItem() {
+        return sessaoItem;
+    }
+
+    public void setSessaoItem(String sessaoItem) {
+        this.sessaoItem = sessaoItem;
+    }
+
+    public List<MovimentacaoEstoqueEntity> getMovimentacoes() {
+        return movimentacoes;
+    }
+
+    public void setMovimentacoes(List<MovimentacaoEstoqueEntity> movimentacoes) {
+        this.movimentacoes = movimentacoes;
+    }
 }

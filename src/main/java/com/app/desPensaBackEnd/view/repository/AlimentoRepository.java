@@ -11,4 +11,5 @@ import java.util.List;
 public interface AlimentoRepository extends JpaRepository<AlimentoEntity, Long> {
     // Método customizado usado no Service
     List<AlimentoEntity> findByEstoqueIdEstoqueAndQuantidadeGreaterThan(Long idEstoque, int quantidadeMinima);
+    List<AlimentoEntity> findByEstoqueIdEstoque(Long idEstoque);
 }

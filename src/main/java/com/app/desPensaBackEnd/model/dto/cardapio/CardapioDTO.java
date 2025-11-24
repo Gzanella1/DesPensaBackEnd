@@ -1,6 +1,6 @@
-package com.app.desPensaBackEnd.model.dto;
+package com.app.desPensaBackEnd.model.dto.cardapio;
 
-import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
+
 
 import java.util.List;
 

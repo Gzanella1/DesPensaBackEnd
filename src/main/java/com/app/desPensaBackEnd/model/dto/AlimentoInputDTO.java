@@ -1,28 +1,40 @@
 package com.app.desPensaBackEnd.model.dto;
 
 import com.app.desPensaBackEnd.enums.CategoriaAlimento;
-import com.app.desPensaBackEnd.model.entity.EstoqueEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 
-public class AlimentoDTO {
+public class AlimentoInputDTO {
     private String nome;
-    private Long codigo;
-    private CategoriaAlimento categoria;
-    private String unidadeMedida; // ex: "kg", "g", "un"
+    private Long codigo; // Codigo de barras ou similar
+    private CategoriaAlimento categoria; // Deve vir como STRING no JSON (ex: "FRUTA")
+    private String unidadeMedida;
     private Double valorCalorico;
     private LocalDate dataValidade;
     private int quantidade;
-    private EstoqueEntity estoque;
+
+    // O MAIS IMPORTANTE: Recebemos apenas o ID do estoque
+    @JsonProperty("idEstoque") // Mapeia o JSON "idEstoque" para esta variável
+    private Long idEstoque;
 
 
-    // GETTER E SETTER
+
+
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Long getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
     }
 
     public CategoriaAlimento getCategoria() {
@@ -65,19 +77,11 @@ public class AlimentoDTO {
         this.quantidade = quantidade;
     }
 
-    public EstoqueEntity getEstoque() {
-        return estoque;
+    public Long getEstoqueId() {
+        return idEstoque;
     }
 
-    public void setEstoque(EstoqueEntity estoque) {
-        this.estoque = estoque;
-    }
-
-    public Long getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(Long codigo) {
-        this.codigo = codigo;
+    public void setEstoqueId(Long estoqueId) {
+        this.idEstoque = estoqueId;
     }
 }

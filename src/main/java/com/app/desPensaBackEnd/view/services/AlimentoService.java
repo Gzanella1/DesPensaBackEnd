@@ -1,76 +1,74 @@
 package com.app.desPensaBackEnd.view.services;
 
 import com.app.desPensaBackEnd.enums.CategoriaAlimento;
-import com.app.desPensaBackEnd.model.dto.AlimentoDTO;
+import com.app.desPensaBackEnd.model.dto.AlimentoInputDTO;
 import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
 import com.app.desPensaBackEnd.model.entity.EstoqueEntity;
-import com.app.desPensaBackEnd.model.entity.RestricaoAlimentarEntity;
 import com.app.desPensaBackEnd.view.repository.AlimentoRepository;
-import com.app.desPensaBackEnd.view.repository.RestricaoAlimentarRepository;
+import com.app.desPensaBackEnd.view.repository.EstoqueRepository;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 
 @Service
 public class AlimentoService {
 
-    private final AlimentoRepository alimentoRepo;
-    private final RestricaoAlimentarRepository restricaoRepo;
+    private final AlimentoRepository alimentoRepository;
+    private final EstoqueRepository estoqueRepository; // Precisamos buscar o estoque pai
 
-    public AlimentoService(AlimentoRepository alimentoRepo,
-                           RestricaoAlimentarRepository restricaoRepo) {
-        this.alimentoRepo = alimentoRepo;
-        this.restricaoRepo = restricaoRepo;
+    public AlimentoService(AlimentoRepository alimentoRepository, EstoqueRepository estoqueRepository) {
+        this.alimentoRepository = alimentoRepository;
+        this.estoqueRepository = estoqueRepository;
     }
 
-    /**
-     * Converte lista de nomes de restrições para entidades persistidas (se existirem).
-     * Ignora nomes desconhecidos.
-     */
-    public Set<RestricaoAlimentarEntity> buscarRestricoesPorNome(List<String> nomes) {
-        if (nomes == null) return Collections.emptySet();
+    // 1. ADICIONAR
+    @Transactional
+    public AlimentoEntity adicionar(AlimentoInputDTO dto) {
+        // Busca o Estoque pelo ID
+        EstoqueEntity estoque = estoqueRepository.findById(dto.getEstoqueId())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado com ID: " + dto.getEstoqueId()));
 
-        return nomes.stream()
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .map(String::toUpperCase)
-                .map(nome -> restricaoRepo.findByNomeIgnoreCase(nome).orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        // Converte DTO para Entity
+        AlimentoEntity alimento = new AlimentoEntity();
+        alimento.setNome(dto.getNome());
+        alimento.setCodigo(dto.getCodigo());
+        alimento.setCategoria(dto.getCategoria());
+        alimento.setUnidadeMedida(dto.getUnidadeMedida());
+        alimento.setValorCalorico(dto.getValorCalorico());
+        alimento.setDataValidade(dto.getDataValidade());
+        alimento.setQuantidade(dto.getQuantidade());
+
+        // Vincula o relacionamento
+        alimento.setEstoque(estoque);
+
+        return alimentoRepository.save(alimento);
     }
 
-    /**
-     * Busca todos alimentos que NÃO contenham NENHUMA das restrições passadas.
-     */
-    public List<AlimentoEntity> buscarAlimentosPermitidos(Set<RestricaoAlimentarEntity> restricoesProibidas) {
+    // 2. LISTAR TUDO
+    public List<AlimentoEntity> listarTodos() {
+        return alimentoRepository.findAll();
+    }
 
-        List<AlimentoEntity> todos = alimentoRepo.findAll();
+    // 2.1 LISTAR POR ESTOQUE (Mais útil para seu app)
+    public List<AlimentoEntity> listarPorEstoque(Long estoqueId) {
+        return alimentoRepository.findByEstoqueIdEstoque(estoqueId);
+    }
 
-        if (restricoesProibidas == null || restricoesProibidas.isEmpty()) {
-            return todos;
+    // 3. REMOVER
+    @Transactional
+    public void remover(Long idAlimento) {
+        if (!alimentoRepository.existsById(idAlimento)) {
+            throw new RuntimeException("Alimento não encontrado para remover.");
         }
-
-        // filtrar: manter apenas alimentos cuja interseção com restricoesProibidas seja vazia
-        return todos.stream()
-                .filter(a -> {
-                    if (a.getRestricoes() == null || a.getRestricoes().isEmpty()) return true;
-                    // verifica se existe alguma restrição do alimento que esteja nas proibidas
-                    for (RestricaoAlimentarEntity r : a.getRestricoes()) {
-                        if (restricoesProibidas.stream().anyMatch(rp -> rp.getNome().equalsIgnoreCase(r.getNome()))) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
-                .collect(Collectors.toList());
+        alimentoRepository.deleteById(idAlimento);
     }
 
+
+
+
+    // put atualiza alimento
 }

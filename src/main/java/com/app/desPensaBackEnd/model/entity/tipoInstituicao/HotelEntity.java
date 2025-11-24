@@ -16,4 +16,21 @@ public class HotelEntity extends InstituicaoEntity {
     private int numeroQuartos;
     @Column(name = "classificacao_estrelas")
     private int classificacaoEstrelas;
+
+
+    public int getNumeroQuartos() {
+        return numeroQuartos;
+    }
+
+    public void setNumeroQuartos(int numeroQuartos) {
+        this.numeroQuartos = numeroQuartos;
+    }
+
+    public int getClassificacaoEstrelas() {
+        return classificacaoEstrelas;
+    }
+
+    public void setClassificacaoEstrelas(int classificacaoEstrelas) {
+        this.classificacaoEstrelas = classificacaoEstrelas;
+    }
 }

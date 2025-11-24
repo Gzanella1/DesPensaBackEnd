@@ -1,6 +1,7 @@
 package com.app.desPensaBackEnd.model.entity;
 
 import com.app.desPensaBackEnd.enums.CategoriaAlimento;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class AlimentoEntity     {
 
     @ManyToOne
     @JoinColumn(name = "fk_estoque")
+    @JsonIgnore // <--- ADICIONE ESTA LINHA
     private EstoqueEntity estoque;
 
 

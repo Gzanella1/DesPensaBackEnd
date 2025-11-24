@@ -2,6 +2,7 @@ package com.app.desPensaBackEnd.model.entity;
 
 
 import com.app.desPensaBackEnd.enums.TipoInstituicao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -40,6 +41,7 @@ public abstract class InstituicaoEntity {
         usuários ligados a ela, por exemplo.*/
 
     @OneToMany(mappedBy = "instituicao", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<UsuarioEntity> responsaveis = new ArrayList<>();
 
     // Uma instituição tem muitas pessoas

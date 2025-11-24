@@ -14,4 +14,20 @@ public class EscolaEntity extends InstituicaoEntity {
     @Column(name = "turno")
     private String turno; // ex.: "manhã", "tarde", "integral"
 
+
+    public int getNumeroMatriculas() {
+        return numeroMatriculas;
+    }
+
+    public void setNumeroMatriculas(int numeroMatriculas) {
+        this.numeroMatriculas = numeroMatriculas;
+    }
+
+    public String getTurno() {
+        return turno;
+    }
+
+    public void setTurno(String turno) {
+        this.turno = turno;
+    }
 }
