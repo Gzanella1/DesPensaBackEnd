@@ -4,8 +4,6 @@ package com.app.desPensaBackEnd.model.entity;
 import com.app.desPensaBackEnd.enums.TipoAcessoUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
