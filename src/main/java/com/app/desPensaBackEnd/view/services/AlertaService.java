@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AlertaService {
@@ -96,5 +97,29 @@ public class AlertaService {
             alerta.setVisualizado(true);
             alertaRepository.save(alerta);
         });
+    }
+
+
+
+    // --- NOVO MÉTODO PARA "LIMPAR" O ALERTA ---
+    @Transactional
+    public void resolverAlertaEstoqueBaixo(EstoqueEntity estoque, String nomeAlimento) {
+        if (estoque == null) return;
+
+        // Busca todos os alertas de ESTOQUE_BAIXO não lidos desta despensa
+        List<AlertaEntity> alertasAtivos = alertaRepository
+                .findByEstoqueIdEstoqueAndTipoAlertaAndVisualizadoFalse(
+                        estoque.getIdEstoque(),
+                        TipoAlerta.ESTOQUE_BAIXO
+                );
+
+        // Como não temos uma coluna "idAlimento" no alerta, verificamos pelo texto da mensagem
+        for (AlertaEntity alerta : alertasAtivos) {
+            if (alerta.getMensagem().contains(nomeAlimento)) {
+                alerta.setVisualizado(true); // Marca como resolvido/lido
+                // Opcional: alertaRepository.delete(alerta); // Se preferir apagar do banco
+                alertaRepository.save(alerta);
+            }
+        }
     }
 }

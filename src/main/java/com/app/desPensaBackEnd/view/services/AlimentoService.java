@@ -1,38 +1,47 @@
 package com.app.desPensaBackEnd.view.services;
 
-import com.app.desPensaBackEnd.enums.CategoriaAlimento;
+
+
+import com.app.desPensaBackEnd.enums.TipoMovimentacao;
 import com.app.desPensaBackEnd.model.dto.AlimentoInputDTO;
 import com.app.desPensaBackEnd.model.entity.AlimentoEntity;
 import com.app.desPensaBackEnd.model.entity.EstoqueEntity;
+import com.app.desPensaBackEnd.model.entity.MovimentacaoEstoqueEntity;
 import com.app.desPensaBackEnd.view.repository.AlimentoRepository;
 import com.app.desPensaBackEnd.view.repository.EstoqueRepository;
-import jakarta.persistence.*;
+import com.app.desPensaBackEnd.view.repository.MovimentacaoEstoqueRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class AlimentoService {
 
     private final AlimentoRepository alimentoRepository;
-    private final EstoqueRepository estoqueRepository; // Precisamos buscar o estoque pai
+    private final EstoqueRepository estoqueRepository;
+    private final MovimentacaoEstoqueRepository movimentacaoRepository;
 
-    public AlimentoService(AlimentoRepository alimentoRepository, EstoqueRepository estoqueRepository) {
+    @Autowired
+    public AlimentoService(AlimentoRepository alimentoRepository,
+                           EstoqueRepository estoqueRepository,
+                           MovimentacaoEstoqueRepository movimentacaoRepository) {
         this.alimentoRepository = alimentoRepository;
         this.estoqueRepository = estoqueRepository;
+        this.movimentacaoRepository = movimentacaoRepository;
     }
 
-    // 1. ADICIONAR
+    // ===============================
+    //   1) ADICIONAR ALIMENTO
+    // ===============================
     @Transactional
     public AlimentoEntity adicionar(AlimentoInputDTO dto) {
-        // Busca o Estoque pelo ID
-        EstoqueEntity estoque = estoqueRepository.findById(dto.getEstoqueId())
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado com ID: " + dto.getEstoqueId()));
 
-        // Converte DTO para Entity
+        EstoqueEntity estoque = estoqueRepository.findById(dto.getEstoqueId())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
+
         AlimentoEntity alimento = new AlimentoEntity();
         alimento.setNome(dto.getNome());
         alimento.setCodigo(dto.getCodigo());
@@ -41,34 +50,67 @@ public class AlimentoService {
         alimento.setValorCalorico(dto.getValorCalorico());
         alimento.setDataValidade(dto.getDataValidade());
         alimento.setQuantidade(dto.getQuantidade());
-
-        // Vincula o relacionamento
         alimento.setEstoque(estoque);
 
-        return alimentoRepository.save(alimento);
+        // Salva o alimento
+        AlimentoEntity alimentoSalvo = alimentoRepository.save(alimento);
+
+        // ============ REGISTRAR MOVIMENTAÇÃO DE ENTRADA ============
+        MovimentacaoEstoqueEntity mov = new MovimentacaoEstoqueEntity();
+        mov.setTipo(TipoMovimentacao.ENTRADA);
+        mov.setData(LocalDateTime.now());
+        mov.setQuantidade(dto.getQuantidade());
+        mov.setOrigem("Cadastro");
+        mov.setObservacao("Cadastro de novo alimento");
+        mov.setAlimento(alimentoSalvo);
+        mov.setEstoque(estoque);
+
+        movimentacaoRepository.save(mov);
+        // ============================================================
+
+        return alimentoSalvo;
     }
 
-    // 2. LISTAR TUDO
+    // ===============================
+    //   2) LISTAR
+    // ===============================
     public List<AlimentoEntity> listarTodos() {
         return alimentoRepository.findAll();
     }
 
-    // 2.1 LISTAR POR ESTOQUE (Mais útil para seu app)
     public List<AlimentoEntity> listarPorEstoque(Long estoqueId) {
         return alimentoRepository.findByEstoqueIdEstoque(estoqueId);
     }
 
-    // 3. REMOVER
+
+    // ===============================
+    //   3) REMOVER ALIMENTO
+    // ===============================
     @Transactional
     public void remover(Long idAlimento) {
-        if (!alimentoRepository.existsById(idAlimento)) {
-            throw new RuntimeException("Alimento não encontrado para remover.");
-        }
-        alimentoRepository.deleteById(idAlimento);
+
+        AlimentoEntity alimento = alimentoRepository.findById(idAlimento)
+                .orElseThrow(() -> new RuntimeException("Alimento não encontrado para remover."));
+
+        EstoqueEntity estoque = alimento.getEstoque();
+
+        // ============ REGISTRAR MOVIMENTAÇÃO DE SAÍDA ============
+        MovimentacaoEstoqueEntity mov = new MovimentacaoEstoqueEntity();
+        mov.setTipo(TipoMovimentacao.SAIDA);
+        mov.setData(LocalDateTime.now());
+        mov.setQuantidade(alimento.getQuantidade());
+        mov.setOrigem("Remoção Manual");
+        mov.setObservacao("Item removido do estoque");
+        mov.setAlimento(alimento);
+        mov.setEstoque(estoque);
+
+        movimentacaoRepository.save(mov);
+        // ============================================================
+
+        // delete movimentações do item
+        //movimentacaoRepository.deleteByAlimento_IdAlimento(idAlimento);
+
+        // agora remove o alimento
+        alimentoRepository.delete(alimento);
     }
-
-
-
-
-    // put atualiza alimento
 }

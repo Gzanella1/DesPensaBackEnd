@@ -1,6 +1,7 @@
 package com.app.desPensaBackEnd.model.entity;
 
 import com.app.desPensaBackEnd.enums.TipoMovimentacao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ public class MovimentacaoEstoqueEntity {
     @Column(name = "origem")
     private String origem;
     @Column(name = "data")
-    private LocalDateTime data;
+    private LocalDateTime dataMovimentacao;
     @Column(name = "observacao")
     private String observacao;
 
@@ -28,6 +29,7 @@ public class MovimentacaoEstoqueEntity {
     @JoinColumn(name = "alimento_id")
     private AlimentoEntity alimento;
 
+    @JsonIgnore // Isso impede o loop infinito
     @ManyToOne
     @JoinColumn(name = "estoque_id")  // nome da coluna FK na tabela movimentacao_estoque
     private EstoqueEntity estoque;
@@ -60,11 +62,11 @@ public class MovimentacaoEstoqueEntity {
     }
 
     public LocalDateTime getData() {
-        return data;
+        return dataMovimentacao;
     }
 
     public void setData(LocalDateTime data) {
-        this.data = data;
+        this.dataMovimentacao = data;
     }
 
     public String getObservacao() {

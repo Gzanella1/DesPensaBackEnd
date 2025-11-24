@@ -58,6 +58,9 @@ public class AlimentoRestController {
 		return ResponseEntity.ok(alimentoService.listarPorEstoque(idEstoque));
 	}
 
+
+
+
 	// DELETE: Remover
 	// URL: http://localhost:8080/api/alimentos/5 (onde 5 é o id do alimento)
 	@DeleteMapping("/{id}")
@@ -67,5 +70,4 @@ public class AlimentoRestController {
 	}
 
 
-	// criar  put para atualizar alimento e função no front end para chamar
 }
