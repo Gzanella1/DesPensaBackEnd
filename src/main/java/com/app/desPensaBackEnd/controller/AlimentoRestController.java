@@ -69,5 +69,28 @@ public class AlimentoRestController {
 		return ResponseEntity.noContent().build();
 	}
 
+	// No AlimentoController.java
+
+// AlimentoController.java
+
+	@PutMapping("/{id}")
+	public ResponseEntity<AlimentoEntity> atualizar(@PathVariable Long id, @RequestBody AlimentoEntity alimento) {
+		AlimentoEntity atualizado = alimentoService.atualizar(id, alimento);
+
+		if (atualizado != null) {
+			return ResponseEntity.ok(atualizado);
+		}
+
+		return ResponseEntity.notFound().build();
+	}
+
+
+	@GetMapping("/{id}")
+	public ResponseEntity<AlimentoEntity> buscarPorId(@PathVariable Long id) {
+		// O Controller pede ao Service, e decide o HTTP (200 ou 404) baseado na resposta
+		return alimentoService.buscarPorId(id)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
+	}
 
 }

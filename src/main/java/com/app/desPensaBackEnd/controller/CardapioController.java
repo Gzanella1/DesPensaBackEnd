@@ -25,7 +25,7 @@ public class CardapioController {
     // PASSO 1: Buscar Sugestões (GET)
     // Exemplo URL: http://localhost:8080/api/cardapios/sugestoes?estoqueId=1&intolerancias=gluten
     // -------------------------------------------------------
-    @GetMapping("/sugestoes")
+   /* @GetMapping("/sugestoes")
     public ResponseEntity<?> listarSugestoes(
             @RequestParam Long estoqueId,
             @RequestParam(required = false) String intolerancias) {
@@ -40,6 +40,20 @@ public class CardapioController {
             // Retorna 500 se for um erro técnico grave
             return ResponseEntity.internalServerError().body("Erro interno ao buscar sugestões: " + e.getMessage());
         }
+    }
+*/
+
+    // Exemplo de como deve ficar no Controller
+    @GetMapping("/sugestoes")
+    public ResponseEntity<List<SugestaoCardapioDTO>> obterSugestoes(
+            @RequestParam Long estoqueId,
+            @RequestParam(required = false) TipoRefeicao tipo) { // Adicione o parametro 'tipo'
+
+        // Se o front não mandar, assuma ALMOCO como padrão
+        TipoRefeicao tipoFinal = (tipo != null) ? tipo : TipoRefeicao.ALMOCO;
+
+        var sugestoes = cardapioService.sugerirReceitas(estoqueId, tipoFinal);
+        return ResponseEntity.ok(sugestoes);
     }
 
     // -------------------------------------------------------

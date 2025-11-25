@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AlimentoService {
@@ -83,34 +84,48 @@ public class AlimentoService {
     }
 
 
-    // ===============================
-    //   3) REMOVER ALIMENTO
-    // ===============================
-    @Transactional
-    public void remover(Long idAlimento) {
 
-        AlimentoEntity alimento = alimentoRepository.findById(idAlimento)
-                .orElseThrow(() -> new RuntimeException("Alimento não encontrado para remover."));
+    // No AlimentoService.java
 
-        EstoqueEntity estoque = alimento.getEstoque();
+    public Optional<AlimentoEntity> buscarPorId(Long id) {
+        return alimentoRepository.findById(id);
+    }
 
-        // ============ REGISTRAR MOVIMENTAÇÃO DE SAÍDA ============
-        MovimentacaoEstoqueEntity mov = new MovimentacaoEstoqueEntity();
-        mov.setTipo(TipoMovimentacao.SAIDA);
-        mov.setData(LocalDateTime.now());
-        mov.setQuantidade(alimento.getQuantidade());
-        mov.setOrigem("Remoção Manual");
-        mov.setObservacao("Item removido do estoque");
-        mov.setAlimento(alimento);
-        mov.setEstoque(estoque);
+    public void remover(Long id) {
+        AlimentoEntity alimento = alimentoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Alimento não encontrado"));
 
-        movimentacaoRepository.save(mov);
-        // ============================================================
+        // Se a intenção é apagar o registro do banco, NÃO crie movimentação de estoque aqui.
+        // Apenas apague.
 
-        // delete movimentações do item
-        //movimentacaoRepository.deleteByAlimento_IdAlimento(idAlimento);
+        // Nota: Se já existirem movimentações antigas ligadas a este alimento,
+        // o delete vai falhar por violação de chave estrangeira, a menos que você
+        // tenha configurado CascadeType.REMOVE na entidade Alimento.
 
-        // agora remove o alimento
         alimentoRepository.delete(alimento);
+    }
+
+
+
+
+
+    // No AlimentoService.java
+
+    // AlimentoService.java
+
+    public AlimentoEntity atualizar(Long id, AlimentoEntity novosDados) {
+        return alimentoRepository.findById(id).map(item -> {
+            // Atualiza os campos
+            item.setNome(novosDados.getNome());
+            item.setCodigo(novosDados.getCodigo());
+            item.setCategoria(novosDados.getCategoria());
+            item.setQuantidade(novosDados.getQuantidade());
+            item.setUnidadeMedida(novosDados.getUnidadeMedida());
+            item.setDataValidade(novosDados.getDataValidade());
+            item.setValorCalorico(novosDados.getValorCalorico());
+
+            // Salva a atualização
+            return alimentoRepository.save(item);
+        }).orElse(null); // Retorna null se o ID não existir
     }
 }

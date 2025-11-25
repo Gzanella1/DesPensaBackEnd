@@ -14,9 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,7 +23,6 @@ public class CardapioGeneratorService {
     @Value("${spoonacular.api.key}")
     private String apiKey;
 
-    // ENDPOINT DA "GELADEIRA" (O QUE TEM NA DESPENSA)
     private final String API_FIND_BY_INGREDIENTS = "https://api.spoonacular.com/recipes/findByIngredients";
 
     private final AlimentoRepository alimentoRepository;
@@ -44,114 +41,135 @@ public class CardapioGeneratorService {
     }
 
     // -----------------------------------------------------------------------
-    // 1. SUGERIR RECEITAS (GET) - Usando findByIngredients
+    // 1. SUGERIR RECEITAS (AGORA COM ALEATORIEDADE E CONTEXTO)
     // -----------------------------------------------------------------------
-    public List<SugestaoCardapioDTO> sugerirReceitas(Long estoqueId, String intolerancias) {
+    public List<SugestaoCardapioDTO> sugerirReceitas(Long estoqueId, TipoRefeicao tipoRefeicao) {
 
-        // 1. Busca TUDO do banco (com quantidade positiva)
+        // 1. Busca TUDO do banco que tem quantidade
         List<AlimentoEntity> todosAlimentos = alimentoRepository.findByEstoqueIdEstoqueAndQuantidadeGreaterThan(estoqueId, 0);
 
         if (todosAlimentos.isEmpty()) {
-            throw new RuntimeException("Estoque vazio! Adicione alimentos.");
+            throw new RuntimeException("Estoque vazio! Adicione alimentos para gerar sugestões.");
         }
 
-        // 2. FILTRO DE CATEGORIA (Para não misturar sobremesa com almoço)
-        // Se for buscar Janta/Almoço, ignoramos frutas e doces na busca
-        List<String> ingredientesPrincipais = todosAlimentos.stream()
-                .filter(a -> a.getNome() != null && !a.getNome().isEmpty())
-                .filter(a -> isIngredientePrincipal(a.getCategoria())) // Usa o Enum para filtrar Morango
+        // 2. FILTRAGEM INTELIGENTE DE INGREDIENTES
+        // Filtra os ingredientes baseados no tipo de refeição (ex: não mandar carne crua pro café da manhã)
+        List<String> ingredientesSelecionados = todosAlimentos.stream()
+                .filter(a -> a.getNome() != null && !a.getNome().isBlank())
+                .filter(a -> filtrarIngredientePorContexto(a.getCategoria(), tipoRefeicao))
                 .map(AlimentoEntity::getNome)
                 .map(String::toLowerCase)
-                .limit(10) // Pode mandar mais ingredientes nesse endpoint (até 10 é seguro)
+                .map(String::trim)
+                .distinct() // Evita duplicatas (ex: Arroz marca A e Arroz marca B vira só "arroz")
+                .limit(15) // Envia mais ingredientes para a API ter mais opções
                 .collect(Collectors.toList());
 
-        String ingredientesParam;
-
-        // Lógica de Fallback: Se só tiver fruta, manda fruta. Se tiver comida, manda comida.
-        if (!ingredientesPrincipais.isEmpty()) {
-            ingredientesParam = String.join(",", ingredientesPrincipais);
-        } else {
-            ingredientesParam = todosAlimentos.stream()
+        // Fallback: Se o filtro for muito restrito e não sobrar nada, usa tudo que tem.
+        if (ingredientesSelecionados.isEmpty()) {
+            ingredientesSelecionados = todosAlimentos.stream()
                     .map(AlimentoEntity::getNome)
-                    .map(String::toLowerCase)
                     .limit(5)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.toList());
         }
 
-        // 3. Monta a URL (findByIngredients)
+        String ingredientesParam = String.join(",", ingredientesSelecionados);
+
+        // 3. BUSCA NA API (Pedindo MAIS resultados para poder randomizar)
         RestTemplate restTemplate = new RestTemplate();
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(API_FIND_BY_INGREDIENTS)
                 .queryParam("ingredients", ingredientesParam)
-                .queryParam("number", 3)
-                .queryParam("ranking", 1) // 1 = Maximizar o uso do que eu tenho (Geladeira Mode)
+                .queryParam("number", 20) // <--- TRUQUE: Pede 20 receitas
+                .queryParam("ranking", 1) // 1 = Maximizar uso dos ingredientes (Geladeira Mode)
                 .queryParam("ignorePantry", true)
                 .queryParam("apiKey", apiKey);
 
-        String uri = builder.toUriString();
-        System.out.println("--------------------------------------------------");
-        System.out.println("Ingredientes enviados: " + ingredientesParam);
-        System.out.println("URL API GERADA: " + uri);
-        System.out.println("--------------------------------------------------");
-
         try {
-            // Esse endpoint retorna um ARRAY, não um objeto complexo.
-            SpoonacularRecipeDTO[] response = restTemplate.getForObject(uri, SpoonacularRecipeDTO[].class);
+            SpoonacularRecipeDTO[] response = restTemplate.getForObject(builder.toUriString(), SpoonacularRecipeDTO[].class);
 
             if (response == null || response.length == 0) {
-                // Retorna lista vazia em vez de erro 500
                 return new ArrayList<>();
             }
 
-            // 4. Converte para DTO de visualização
+            // 4. EMBARALHAMENTO (SHUFFLE)
+            // Converte array para lista para poder manipular
+            List<SpoonacularRecipeDTO> listaReceitas = new ArrayList<>(Arrays.asList(response));
+
+            // Se tivermos mais de 3 opções, embaralhamos para o usuário ver coisas diferentes
+            if (listaReceitas.size() > 1) {
+                Collections.shuffle(listaReceitas);
+            }
+
+            // Pegamos apenas as top 3 DEPOIS de embaralhar
+            List<SpoonacularRecipeDTO> top3Aleatorio = listaReceitas.stream()
+                    .limit(12)
+                    .collect(Collectors.toList());
+
+            // 5. Converte para DTO de visualização
             List<SugestaoCardapioDTO> sugestoes = new ArrayList<>();
-            for (SpoonacularRecipeDTO rec : response) {
+            for (SpoonacularRecipeDTO rec : top3Aleatorio) {
                 SugestaoCardapioDTO s = new SugestaoCardapioDTO();
                 s.setIdReceitaApi(rec.getId());
                 s.setNomeReceita(rec.getTitle());
                 s.setUrlImagem(rec.getImage());
+                // Opcional: Adicionar contagem de ingredientes usados/faltantes aqui para mostrar no front
                 sugestoes.add(s);
             }
             return sugestoes;
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Erro na API Externa: " + e.getMessage());
+            // Em produção, use um Logger, não sysout/stacktrace
+            throw new RuntimeException("Erro ao comunicar com serviço de receitas.");
         }
     }
 
-    // Método para ignorar Morango/Doces na busca de prato principal
-    private boolean isIngredientePrincipal(CategoriaAlimento categoria) {
-        if (categoria == null) return true;
+    /**
+     * Lógica avançada para decidir quais ingredientes enviar para a API
+     * baseado no momento do dia (Almoço vs Café).
+     */
+    private boolean filtrarIngredientePorContexto(CategoriaAlimento categoria, TipoRefeicao tipo) {
+        if (categoria == null) return true; // Na dúvida, manda.
+        if (tipo == null) return true;
+
         String cat = categoria.name().toUpperCase();
-        return cat.equals("PROTEINA") ||
-                cat.equals("CEREAL") ||
-                cat.equals("LEGUME") ||
-                cat.equals("VERDURA") ||
-                cat.equals("CARNE") ||
-                cat.equals("LATICINIO");
+
+        // Lógica para ALMOÇO e JANTAR (Foco em comida "de sal")
+        if (tipo == TipoRefeicao.ALMOCO || tipo == TipoRefeicao.JANTA) {
+            // Evita frutas doces ou ingredientes de confeitaria como base principal
+            // (A não ser que sua CategoriaAlimento seja muito específica, adapte aqui)
+            return !cat.equals("DOCE") && !cat.equals("FRUTA");
+        }
+
+        // Lógica para CAFÉ DA MANHÃ e LANCHE
+        if (tipo == TipoRefeicao.CAFE ) {
+            return cat.equals("LATICINIO") ||
+                    cat.equals("CEREAL") ||
+                    cat.equals("FRUTA") ||
+                    cat.equals("PADARIA") ||
+                    cat.equals("DOCE");
+        }
+
+        return true;
     }
 
     // -----------------------------------------------------------------------
-    // 2. ESCOLHER E SALVAR (POST) - Baixa Estoque
+    // 2. ESCOLHER E SALVAR (POST) - Mantido similar, com pequenas proteções
     // -----------------------------------------------------------------------
     @Transactional
     public CardapioEntity salvarCardapioEscolhido(Long idReceitaEscolhida, Long idInstituicao, TipoRefeicao tipo) {
 
-        // 1. Busca detalhes técnicos (Ingredientes e quantidades)
-        // endpoint /information é necessário para saber QUANTO baixar
-        RestTemplate restTemplate = new RestTemplate();
         String urlDetalhes = "https://api.spoonacular.com/recipes/" + idReceitaEscolhida + "/information?includeNutrition=false&apiKey=" + apiKey;
+        RestTemplate restTemplate = new RestTemplate();
 
         DetalheReceitaDTO detalhes;
         try {
             detalhes = restTemplate.getForObject(urlDetalhes, DetalheReceitaDTO.class);
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar detalhes da receita: " + e.getMessage());
+            throw new RuntimeException("Falha ao buscar receita: " + e.getMessage());
         }
 
-        if (detalhes == null) throw new RuntimeException("Detalhes não encontrados.");
+        if (detalhes == null) throw new RuntimeException("Receita não encontrada na API.");
 
-        // 2. Cria cabeçalho
         InstituicaoEntity instituicao = instituicaoRepository.findById(idInstituicao)
                 .orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
 
@@ -165,15 +183,10 @@ public class CardapioGeneratorService {
         List<ItemCardapio> ingredientesUsados = new ArrayList<>();
         List<AlimentoEntity> estoqueAtual = alimentoRepository.findAll();
 
-        // 3. Match com estoque e Baixa
         for (IngredienteDTO ingApi : detalhes.getIngredientesEstendidos()) {
-
-            // Busca flexível
+            // Busca "Fuzzy" simples
             AlimentoEntity alimentoBanco = estoqueAtual.stream()
-                    .filter(a -> a.getNome() != null &&
-                            (a.getNome().equalsIgnoreCase(ingApi.getName()) ||
-                                    a.getNome().toLowerCase().contains(ingApi.getName().toLowerCase()) ||
-                                    ingApi.getName().toLowerCase().contains(a.getNome().toLowerCase())))
+                    .filter(a -> matchIngrediente(a.getNome(), ingApi.getName()))
                     .findFirst().orElse(null);
 
             if (alimentoBanco != null) {
@@ -184,8 +197,10 @@ public class CardapioGeneratorService {
                 item.setCardapio(cardapio);
                 ingredientesUsados.add(item);
 
-                // Chama o EstoqueService para baixar e gerar alerta
                 int qtdParaBaixar = (int) Math.ceil(ingApi.getAmount());
+                // Proteção para não baixar negativo
+                if(qtdParaBaixar < 1) qtdParaBaixar = 1;
+
                 estoqueService.consumirAlimento(alimentoBanco.getIdAlimento(), qtdParaBaixar);
             }
         }
@@ -194,16 +209,16 @@ public class CardapioGeneratorService {
         return cardapioRepository.save(cardapio);
     }
 
+    // Método auxiliar para comparar nomes (pode evoluir para Levenshtein no futuro)
+    private boolean matchIngrediente(String nomeBanco, String nomeApi) {
+        if (nomeBanco == null || nomeApi == null) return false;
+        String b = nomeBanco.toLowerCase();
+        String a = nomeApi.toLowerCase();
+        return b.equals(a) || b.contains(a) || a.contains(b);
+    }
 
-    // Método para apenas CONSULTAR os detalhes (para o Modal)
     public DetalheReceitaDTO buscarDetalhesReceita(Long idReceita) {
-        RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.spoonacular.com/recipes/" + idReceita + "/information?includeNutrition=false&apiKey=" + apiKey;
-
-        try {
-            return restTemplate.getForObject(url, DetalheReceitaDTO.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar detalhes: " + e.getMessage());
-        }
+        return new RestTemplate().getForObject(url, DetalheReceitaDTO.class);
     }
 }
