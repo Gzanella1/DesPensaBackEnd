@@ -1,3 +1,4 @@
+
 package com.app.desPensaBackEnd.view.repository;
 
 import com.app.desPensaBackEnd.model.entity.UsuarioEntity;
@@ -7,5 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     UsuarioEntity findByLogin(String login);
+    UsuarioEntity findByCodigo(Long codigo);
+    
+
 
 }

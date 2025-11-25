@@ -33,4 +33,17 @@ public class UsuarioRestController {
     public void cadastrar(@RequestBody UsuarioDTO cadastro) {
         usuarioService.cadastrar(cadastro);
     }
+    
+    @GetMapping("/buscar/{codigo}")
+    public UsuarioDTO buscarPorId(@PathVariable Long codigo) {
+        return usuarioService.buscarPorCodigo(codigo);
+    }
+
+    @PutMapping(value = "/atualizar", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void atualizar(@RequestBody UsuarioDTO dto) {
+        usuarioService.atualizar(dto);
+    }
+ 
 }
+
+

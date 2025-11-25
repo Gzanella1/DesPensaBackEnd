@@ -86,6 +86,44 @@ public class UsuarioService implements UserDetailsService {
      * @return UserDetails
      * @throws UsernameNotFoundException
      */
+    
+    public UsuarioDTO buscarPorCodigo(Long codigo) {
+
+        UsuarioEntity entity = usuarioRepository.findByCodigo(codigo);
+
+        if (entity == null)
+            throw new RuntimeException("Usuário não encontrado: " + codigo);
+
+        UsuarioDTO dto = new UsuarioDTO();
+        BeanUtils.copyProperties(entity, dto);
+
+        if (entity.getInstituicao() != null) {
+            dto.setIdInstituicao(entity.getInstituicao().getIdInstituicao());
+        }
+
+        return dto;
+    }
+    
+    
+    public void atualizar(UsuarioDTO dto) {
+
+        UsuarioEntity entity = usuarioRepository.findByCodigo(dto.getCodigo());
+
+        if (entity == null)
+            throw new RuntimeException("Usuário não encontrado: " + dto.getCodigo());
+
+        BeanUtils.copyProperties(dto, entity, "codigo", "dataCriacao");
+
+        if (dto.getIdInstituicao() != null) {
+            InstituicaoEntity inst = instituicaoRepository.findById(dto.getIdInstituicao())
+                    .orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
+            entity.setInstituicao(inst);
+        }
+
+        usuarioRepository.save(entity);
+    } 
+    
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
